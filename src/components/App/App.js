@@ -2,7 +2,7 @@ import React from 'react';
 import TicketList from '../TicketList/TicketList';
 
 const App = () => {
-    const userType = new URLSearchParams(window.location.search).get('userType') || 'local';
+    const userType = new URLSearchParams(window.location.search).get('userType');
 
     return (
         <div>

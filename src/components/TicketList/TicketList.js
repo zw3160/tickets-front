@@ -15,7 +15,7 @@ const TicketList = ({ userType }) => {
         setLoading(true);
         
         try {
-            const response = await axios.get(`http://localhost:3002/tickets?userType=${userType}&page=${page}&filter=${filter}`);
+            const response = await axios.get(`http://localhost:3002/api/tickets?userType=${userType}&page=${page}&filter=${filter}&limit=${ticketsPerPage}`);
             setTickets(response.data.tickets);
             setTotalTickets(response.data.total);
         } catch (error) {
@@ -29,7 +29,7 @@ const TicketList = ({ userType }) => {
         fetchTickets();
     }, [page, userType, filter]);
 
-    const totalPages = Math.ceil(totalTickets / ticketsPerPage);
+    const totalPages = () => Math.ceil(totalTickets / ticketsPerPage);
 
     return (
         <div>
@@ -42,42 +42,34 @@ const TicketList = ({ userType }) => {
             />
             <div>
                 {tickets.length ? 
-                ( <div>                {userType === 'local' ? (
+                ( <div>                
                     <div className="grid-layout">
                         {tickets.map(ticket => (
                             <div key={ticket.id} className="ticket-item">
-                                <h3>{ticket.title}</h3>
+                                <h2>{ticket.title}</h2>
                                 <p>{ticket.description}</p>
-                                <p>{ticket.date}</p>
-                                <p>{ticket.location}</p>
+                                 {userType === 'local' && <p>{ticket.date}</p>}
+                                 {userType === 'local' && <p>{ticket.location}</p>}
+                                 {userType === 'tourist' && <img src={ticket.img} alt={ticket.img}></img>}
                             </div>
                         ))}
                     </div>
-                ) : (
-                    <div className="grid-layout">
-                        {tickets.map(ticket => (
-                            <div key={ticket.id} className="ticket-item">
-                                <h3>{ticket.title}</h3>
-                                <p>{ticket.description}</p>
-                                <img src={ticket.img} alt={ticket.img}></img>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                
                 <div className="pagination">
                     {page > 1 && (
                         <button onClick={() => setPage(prev => prev - 1)}>Previous</button>
                     )}
-                    {Array.from({ length: totalPages }, (_, index) => (
+                    {Array.from({ length: totalPages() }, (_, index) => (
                         <button key={index + 1} onClick={() => setPage(index + 1)}>
                             {index + 1}
                         </button>
                     ))}
-                    {page < totalPages && (
+                    {page < totalPages() && (
                         <button onClick={() => setPage(prev => prev + 1)}>Next</button>
                     )}
                 </div></div>) : 
-                ( <div className="no-ticket">There are no events</div>)}
+                ( <div className="no-ticket">There are no events</div>)
+                }
             </div>
            
         </div>
